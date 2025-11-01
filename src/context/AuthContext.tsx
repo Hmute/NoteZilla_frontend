@@ -2,8 +2,11 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { useNavigate } from "react-router-dom";
 
 type User = {
+  id?: number;
   email: string;
-  name: string;
+  firstName?: string;
+  lastName?: string;
+  role?: string;
   token: string
 };
 

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Register: React.FC = () => {
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,12 +20,12 @@ const Register: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/register`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ firstName, lastName, email, password }),
       });
 
       const data = await response.json();
@@ -32,8 +33,8 @@ const Register: React.FC = () => {
       if (!response.ok) {
         throw new Error(data.message || "Registration failed");
       }
-      setSuccess("Registration successful! You can now log in.");
-      register({ ...data?.user?.original, token: data?.authorization?.token });
+      setSuccess("Registration successful! You are now logged in.");
+      register({ ...data.user, token: data.token });
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {
@@ -55,15 +56,30 @@ const Register: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="my-3">
               <div className="mb-3">
-                <label htmlFor="name" className="form-label">
-                  Name
+                <label htmlFor="firstName" className="form-label">
+                  First Name
                 </label>
                 <input
                   type="text"
                   className="form-control"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  id="firstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="lastName" className="form-label">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                   required
                   disabled={loading}
                 />

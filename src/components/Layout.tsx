@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import "../assets/styles/layout.css";
 
 const Layout = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -44,6 +44,13 @@ const Layout = () => {
                       Your Summaries
                     </Link>
                   </li>
+                  {user?.role === 'admin' && (
+                    <li className="nav-item">
+                      <Link className="nav-link" to="/admin">
+                        Admin Dashboard
+                      </Link>
+                    </li>
+                  )}
                 </>
               )}
             </ul>

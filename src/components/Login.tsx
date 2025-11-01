@@ -16,7 +16,7 @@ const Login: React.FC = () => {
     setLoading(true); 
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,7 +29,7 @@ const Login: React.FC = () => {
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
-      login({ ...data?.user, token: data?.authorization?.token });
+      login({ ...data?.user, token: data?.token });
 
       navigate("/");
     } catch (err: any) {
