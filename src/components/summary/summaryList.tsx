@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   name?: string;
@@ -9,7 +10,7 @@ interface Summary {
   id: number;
   title: string;
   summary: string;
-  created_at: string;
+  createdAt: string;
   user?: User;
 }
 
@@ -17,13 +18,14 @@ const SummaryList: React.FC = () => {
   const [summaries, setSummaries] = useState<Summary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedCard, setExpandedCard] = useState<number | null>(null); // 👈 track expanded
 
   const { token } = useAuth();
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     if (token) {
-      fetch(`${import.meta.env.VITE_API_URL}/summaries-list`, {
+      fetch(`${import.meta.env.VITE_API_URL}/videos/summaries`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -34,7 +36,10 @@ const SummaryList: React.FC = () => {
           return res.json();
         })
         .then((data: any) => {
-          setSummaries(data?.data);
+          setSummaries(
+            data?.data.videos
+          );
+
           setLoading(false);
         })
         .catch((err) => {
@@ -43,10 +48,6 @@ const SummaryList: React.FC = () => {
         });
     }
   }, [token]);
-
-  const toggleExpand = (id: number) => {
-    setExpandedCard((prev) => (prev === id ? null : id));
-  };
 
   if (loading)
     return (
@@ -57,7 +58,7 @@ const SummaryList: React.FC = () => {
     return <div className="alert alert-danger text-center">Error: {error}</div>;
 
   return (
-    <div className="container my-5">
+    <div className="container mt-2">
       <h2 className="mb-4 color-primary">Lecture Summaries</h2>
 
       {summaries.length === 0 ? (
@@ -65,37 +66,18 @@ const SummaryList: React.FC = () => {
       ) : (
         <div className="row">
           {summaries.map((summary) => (
-            <div
-              key={summary.id}
-              className="col-md-4 mb-4"
-              onClick={() => toggleExpand(summary.id)} // 👈 toggle expand
-              style={{ cursor: "pointer" }}
-            >
-              <div className="card shadow-sm h-100">
+            <div key={summary.id} className="col-md-4 mb-4">
+              <div
+                className="card shadow-sm h-100 summary-card"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(`/summery/${summary.id}`)}
+              >
                 <div className="card-body">
-                  <h5 className="card-title">{summary.title}</h5>
-
-                  <p
-                    className="card-text"
-                    style={
-                      expandedCard === summary.id
-                        ? {
-                            whiteSpace: "normal",
-                          }
-                        : {
-                            display: "-webkit-box",
-                            WebkitLineClamp: 3,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }
-                    }
-                  >
-                    {summary.summary.replace(/(<([^>]+)>)/gi, "")}
+                  <p className="bold font-size-16px">
+                    {summary.title}
                   </p>
-
                   <small className="text-muted">
-                    {new Date(summary.created_at).toLocaleString()}
+                    {new Date(summary.createdAt).toLocaleString()}
                   </small>
                 </div>
               </div>

@@ -1,14 +1,16 @@
 @font-face {
   font-family: "regular";
-  src: url("../src/assets/fonts/Modelica/BwModelica-Regular.otf") format("truetype");
+  src: url("../src/assets/fonts/Modelica/BwModelica-Regular.otf")
+    format("truetype");
 }
 
 :root {
   --primary: rgb(37, 140, 92);
-  --dark: #282929
+  --dark: #282929;
 }
 
-html, body {
+html,
+body {
   margin: 0px;
   padding: 0px;
   width: 100vw;
@@ -19,15 +21,13 @@ html, body {
   background-color: #1d1e1e !important;
   font-size: 16px;
   overflow-x: hidden;
-
 }
-
 
 .primary-button {
   color: white !important;
   background-color: var(--primary) !important;
   border-radius: 20px !important;
-  padding: .5rem 1rem !important;
+  padding: 0.5rem 1rem !important;
   font-family: 16px !important;
   border: none;
 }
@@ -50,4 +50,37 @@ html, body {
 
 .bck-light-dark {
   background-color: #282929 !important;
+}
+
+.transcript-box {
+  background: #48504d !important;
+  border: 1px solid #ccc !important;
+  border-radius: 8px !important;
+  max-height: 400px !important;
+  overflow-y: auto !important;
+  white-space: pre-wrap !important;
+  line-height: 1.6 !important;
+  color: #d7dad5 !important;
+}
+
+.transition-arrow {
+  transition: transform 0.25s ease;
+  font-size: 1rem;
+}
+
+.font-size-16px {
+  font-size: 16px !important;
+}
+
+.ellipsis {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* libraries override styles */
+
+.swal2-styled {
+  border-radius: 20px;
+  min-width: 8rem;
 }

@@ -1,70 +1,190 @@
+import { useState } from "react";
 import "../../assets/styles/summery.css";
+import { useNavigate } from "react-router-dom";
 
 type SummeryProps = {
   data: {
     message?: string;
-    videoId?: number;
+    id?: number;
     title?: string;
     videoUrl?: string;
     transcript?: string;
     transcriptLength?: number;
     apiCalls?: number;
     remainingCalls?: number;
+    transcriptSummary?: string | Record<string, any>; // <- added summary support
   };
 };
 
 const Summery = ({ data }: SummeryProps) => {
+  const navigate = useNavigate();
+
+  const [openTranscript, setOpenTranscript] = useState(false);
+  const [openSummary, setOpenSummary] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editableTitle, setEditableTitle] = useState(data.title || "");
+
+  const handleSaveTitle = () => {
+    // for now this only updates local state (display)
+    // later you can call an API here to save it to the backend
+    setIsEditingTitle(false);
+  };
+
+  console.log("Summary data:", data.transcriptSummary);
+
   return (
     <>
-      <div className="dashed p-4">
-        <div className="mb-4">
-          <h3 className="extraBold mb-3">Upload Successful! ✅</h3>
-          {data?.title && (
-            <div className="mb-3">
-              <strong>Title:</strong> {data.title}
-            </div>
-          )}
-          {data?.videoId && (
-            <div className="mb-3">
-              <strong>Video ID:</strong> {data.videoId}
-            </div>
-          )}
-          {data?.apiCalls !== undefined && (
-            <div className="mb-3">
-              <strong>API Calls Used:</strong> {data.apiCalls}
-            </div>
-          )}
-          {data?.remainingCalls !== undefined && (
-            <div className="mb-3">
-              <strong>Remaining Calls:</strong> {data.remainingCalls}
-            </div>
-          )}
-        </div>
+      <div className="dashed p-4 d-flex flex-column justify-content-between">
+        <div>
+          <div className="mb-4">
+            <h3 className="extraBold mb-3">Upload Successful!</h3>
 
-        {data?.transcript && (
-          <div className="transcript-section">
-            <h4 className="extraBold mb-3">Transcript:</h4>
-            <div
-              className="transcript-content p-3"
-              style={{
-                backgroundColor: "#f8f9fa",
-                borderRadius: "8px",
-                maxHeight: "400px",
-                overflowY: "auto",
-                whiteSpace: "pre-wrap",
-                lineHeight: "1.6",
-                color: "#212529",
-              }}
-            >
-              {data.transcript}
-            </div>
-            {data?.transcriptLength && (
-              <div className="mt-2" style={{ color: "#6c757d" }}>
-                <small>Length: {data.transcriptLength} characters</small>
+            {data?.title && (
+              <div className="mb-3">
+                <div className="d-flex align-items-center justify-content-between gap-2">
+                  <div className="w-100">
+                    {isEditingTitle ? (
+                      <input
+                        type="text"
+                        className="form-control d-inline-block"
+                        value={editableTitle}
+                        onChange={(e) => setEditableTitle(e.target.value)}
+                      />
+                    ) : (
+                      <span className="bold">{editableTitle}</span>
+                    )}
+                  </div>
+
+                  {!isEditingTitle ? (
+                    <button
+                      type="button"
+                      className="btn border-0 btn-sm d-flex text-white align-items-center gap-1"
+                      onClick={() => setIsEditingTitle(true)}
+                    >
+                      <i className="bi bi-pencil"></i>
+                      <span>Edit</span>
+                    </button>
+                  ) : (
+                    <div className="d-flex gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-success btn-sm d-flex align-items-center gap-1"
+                        onClick={handleSaveTitle}
+                      >
+                        <i className="bi bi-check-lg"></i>
+                        <span>Save</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
+                        onClick={() => {
+                          setEditableTitle(data.title || "");
+                          setIsEditingTitle(false);
+                        }}
+                      >
+                        <i className="bi bi-x-lg"></i>
+                        <span>Cancel</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
+
+            <hr className="mt-3 mb-0" />
+          </div>
+
+          {data?.transcriptSummary && (
+            <div className="mb-3">
+              <button
+                id="summery-btn"
+                className="btn d-flex align-items-center justify-content-between gap-2 w-100"
+                onClick={() => setOpenSummary((prev) => !prev)}
+                data-bs-toggle="collapse"
+                data-bs-target="#summaryCollapse"
+                aria-expanded={openSummary}
+              >
+                <span>View Summary</span>
+                <i
+                  className={`bi bi-chevron-${
+                    openSummary ? "up" : "down"
+                  } transition-arrow`}
+                ></i>
+              </button>
+
+              <div
+                className={`collapse mt-2 ${openSummary ? "show" : ""}`}
+                id="summaryCollapse"
+              >
+                <div className="card card-body transcript-box">
+                  <pre className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
+                    {data?.transcriptSummary?.title}
+                  </pre>
+
+                  <div>
+                    {data?.transcriptSummary?.sections.map((ele, i) => (
+                      <div key={i} className="mb-3">
+                        <h5 className="extraBold">{ele.heading}</h5>
+                        {ele.points.map((point: string, index: number) => (
+                          <p key={index} className="mb-1">
+                            - {point}
+                          </p>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div>
+            <button
+              id="transcript-btn"
+              className="btn  d-flex align-items-center justify-content-between gap-2 w-100"
+              onClick={() => setOpenTranscript((prev) => !prev)}
+              data-bs-toggle="collapse"
+              data-bs-target="#transcriptCollapse"
+              aria-expanded={openTranscript}
+            >
+              <span>View Transcript</span>
+              <i
+                className={`bi bi-chevron-${
+                  openTranscript ? "up" : "down"
+                } transition-arrow`}
+              ></i>
+            </button>
+
+            <div
+              className={`collapse mt-2 ${openTranscript ? "show" : ""}`}
+              id="transcriptCollapse"
+            >
+              <div className="card card-body transcript-box">
+                {data?.transcript}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {data?.id && (
+          <div className="d-flex align-items-center justify-content-center mt-4">
+            <button
+              className="btn choose-file-btn py-2 px-3 m-3 bold min-width"
+              onClick={() => navigate(`/summery/${data?.id}`)}
+            >
+              View Full Summary Page
+            </button>
           </div>
         )}
+      </div>
+
+      <div className="mt-2 d-flex align-items-end justify-content-center">
+        <button
+          type="submit"
+          className="btn primary-button min-width extraBold mt-3"
+        >
+          Upload Another Video
+        </button>
       </div>
     </>
   );

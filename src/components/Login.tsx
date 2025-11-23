@@ -6,36 +6,42 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true); 
+    setLoading(true);
     console.log("Submitting login for:", import.meta.env.VITE_API_URL);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
-      const data = await response.json();
-
+      const json = await response.json();
+      console.log("Login response:", json);
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        throw new Error(json.message || "Login failed");
       }
-      login({ ...data?.user, token: data?.token });
+
+      const { user, token } = json.data;
+
+      login({ ...user, token });
 
       navigate("/");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.error || err.message ||"Something went wrong");
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -66,7 +72,7 @@ const Login: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  disabled={loading} // <- DISABLED WHILE LOADING
+                  disabled={loading}
                 />
               </div>
 
@@ -81,7 +87,7 @@ const Login: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  disabled={loading} // <- DISABLED WHILE LOADING
+                  disabled={loading}
                 />
               </div>
 
@@ -91,7 +97,11 @@ const Login: React.FC = () => {
                 disabled={loading}
               >
                 {loading ? (
-                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
                 ) : null}
                 {loading ? "Logging in..." : "Login"}
               </button>

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import { useNavigate } from "react-router-dom";
 
 type User = {
@@ -7,7 +13,7 @@ type User = {
   firstName?: string;
   lastName?: string;
   role?: string;
-  token: string
+  token: string;
 };
 
 type AuthContextType = {
@@ -21,7 +27,9 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -36,25 +44,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, []);
 
+
   const login = (userData: User) => {
     setUser(userData);
     setToken(userData.token);
-    console.log(userData)
+    console.log(userData);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", userData.token);
-    navigate('/')
-
+    navigate("/");
   };
 
   const register = (userData: User) => {
-    console.log(userData)
-
     setUser(userData);
-   
+
     setToken(userData.token);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", userData.token);
-    navigate('/')
+    navigate("/");
   };
 
   const logout = () => {
@@ -67,7 +73,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated, login, logout, register }}>
+    <AuthContext.Provider
+      value={{ user, token, isAuthenticated, login, logout, register }}
+    >
       {children}
     </AuthContext.Provider>
   );

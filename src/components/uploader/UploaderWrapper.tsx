@@ -15,10 +15,10 @@ const UploaderWrapper: React.FC = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileType, setFileType] = useState<FileType>(null);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const [step, setStep] = useState<"uploading" | "summarizing">("uploading");
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { token } = useAuth(); // <-- Get token from context
+  const { token } = useAuth(); 
 
   useEffect(() => {
     if (loading) {
@@ -45,7 +45,6 @@ const UploaderWrapper: React.FC = () => {
     formData.append("file", file);
 
     try {
-      console.log(token ? { Authorization: `Bearer ${token}` } : {})
       const response = await fetch(`${import.meta.env.VITE_API_URL}/videos/upload`, {
         method: "POST",
         body: formData,
@@ -54,16 +53,16 @@ const UploaderWrapper: React.FC = () => {
 
       if (!response.ok) throw new Error("Upload failed");
 
-      const data = await response.json();
-      console.log("Upload success:", data);
-      setData(data); // for UI display
+      const json = await response.json();
+      console.log("Upload success:", json);
+      setData(json.data); 
+      console.log("Received data:", json.data);
   
       setLoading(false);
 
     } catch (error) {
       console.error("Upload error:", error);
-      alert("File upload failed.");
-      setLoading(false); // Also stop loading on error
+      setLoading(false); 
     }
   };
 

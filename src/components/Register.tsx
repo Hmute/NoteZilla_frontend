@@ -20,25 +20,30 @@ const Register: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ firstName, lastName, email, password }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ firstName, lastName, email, password }),
+        }
+      );
 
-      const data = await response.json();
+      const json = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
+        throw new Error(json.error || "Registration failed");
       }
-      setSuccess("Registration successful! You are now logged in.");
-      register({ ...data.user, token: data.token });
+      const { user, token } = json.data;
+      setSuccess(json.message || "Registration successful");
+
+      register({ ...user, token });
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      setError(err.error || "Something went wrong");
     } finally {
-      setLoading(false); // <- END LOADING
+      setLoading(false);
     }
   };
 
@@ -56,7 +61,7 @@ const Register: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="my-3">
               <div className="mb-3">
-                <label htmlFor="firstName" className="form-label">
+                <label htmlFor="firstName" className="form-label bold">
                   First Name
                 </label>
                 <input
@@ -71,7 +76,7 @@ const Register: React.FC = () => {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="lastName" className="form-label">
+                <label htmlFor="lastName" className="form-label bold">
                   Last Name
                 </label>
                 <input
@@ -86,7 +91,7 @@ const Register: React.FC = () => {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="email" className="form-label">
+                <label htmlFor="email" className="form-label bold">
                   Email
                 </label>
                 <input
@@ -101,12 +106,12 @@ const Register: React.FC = () => {
               </div>
 
               <div className="mb-3">
-                <label htmlFor="password" className="form-label">
+                <label htmlFor="password" className="form-label bold">
                   Password
                 </label>
                 <input
                   type="password"
-                  className="form-control"
+                  className="form-control bold"
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -132,7 +137,7 @@ const Register: React.FC = () => {
               </button>
             </form>
 
-            <p className="mt-3 text-center">
+            <p className="mt-3 text-center fw-bold">
               Already have an account?{" "}
               <a href="/login" className="text-white">
                 Login here

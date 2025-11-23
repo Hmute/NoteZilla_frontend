@@ -20,7 +20,7 @@
 
 @font-face {
   font-family: "medium";
-  src: url("../fonts/Modelica/BwModelica-Medium.ttf") format("truetype");
+  src: url("../fonts/Modelica/BwModelica-Medium.otf") format("truetype");
 }
 
 @font-face {
@@ -47,7 +47,7 @@
 }
 
 .medium {
-  font-family: "medium", sans-serif !important;
+  font-family: medium !important;
 }
 
 .extraBold {
