@@ -143,7 +143,7 @@ const AdminDashboard: React.FC = () => {
       <div className="row">
         <div className="col-12">
           <h2 className="mb-4 text-white">Admin Dashboard</h2>
-          
+
           {/* Summary Cards */}
           <div className="row mb-4">
             <div className="col-md-3">
@@ -249,12 +249,11 @@ const AdminDashboard: React.FC = () => {
                     {statsData?.stats.map((stat, index) => (
                       <tr key={index}>
                         <td>
-                          <span className={`badge ${
-                            stat.method === 'GET' ? 'bg-success' :
-                            stat.method === 'POST' ? 'bg-primary' :
-                            stat.method === 'PUT' ? 'bg-warning' :
-                            stat.method === 'DELETE' ? 'bg-danger' : 'bg-secondary'
-                          }`}>
+                          <span className={`badge ${stat.method === 'GET' ? 'bg-success' :
+                              stat.method === 'POST' ? 'bg-primary' :
+                                stat.method === 'PUT' ? 'bg-warning' :
+                                  stat.method === 'DELETE' ? 'bg-danger' : 'bg-secondary'
+                            }`}>
                             {stat.method}
                           </span>
                         </td>
