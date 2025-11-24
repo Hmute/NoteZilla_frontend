@@ -25,11 +25,12 @@ const SummaryList: React.FC = () => {
 
   useEffect(() => {
     if (token) {
-      fetch(`${import.meta.env.VITE_API_URL}/videos/summaries`, {
+      fetch(`${import.meta.env.VITE_API_URL}/api/v1/videos/summaries`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        credentials: 'include',
       })
         .then((res) => {
           if (!res.ok) throw new Error("Network response was not ok");
