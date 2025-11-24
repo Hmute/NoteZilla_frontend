@@ -58,7 +58,7 @@ const Login: React.FC = () => {
 
       navigate("/");
     } catch (err: any) {
-      setError(err.error || err.message ||"Something went wrong");
+      setError(err.error || err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
