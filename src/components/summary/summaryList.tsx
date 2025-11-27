@@ -39,7 +39,7 @@ const SummaryList: React.FC = () => {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/videos/summary/${id}`,
+          `${import.meta.env.VITE_API_URL}/api/v1/videos/summary/${id}`,
           {
             method: "DELETE",
             headers: {
@@ -69,7 +69,7 @@ const SummaryList: React.FC = () => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
       })
         .then((res) => {
           if (!res.ok) throw new Error("Network response was not ok");
