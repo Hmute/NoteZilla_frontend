@@ -19,6 +19,7 @@ const UploaderWrapper: React.FC = () => {
   const [step, setStep] = useState<"uploading" | "summarizing">("uploading");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { token } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading) {
@@ -40,35 +41,47 @@ const UploaderWrapper: React.FC = () => {
     e.preventDefault();
     if (!file) return;
     setLoading(true);
+    setError(null); // clear old error
 
     const formData = new FormData();
     formData.append("file", file);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/videos/upload`, {
-        method: "POST",
-        body: formData,
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/v1/videos/upload`,
+        {
+          method: "POST",
+          body: formData,
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          credentials: "include",
+        }
+      );
 
-      if (!response.ok) throw new Error("Upload failed");
+      if (!response.ok) {
+        const errorText:any = await response.text();
+        setError(JSON.parse(errorText)?.message || "Upload failed");
+        setLoading(false);
+        return;
+      }
 
       const json = await response.json();
-      console.log("Upload success:", json);
       setData(json.data);
-      console.log("Received data:", json.data);
-
       setLoading(false);
-
-    } catch (error) {
-      console.error("Upload error:", error);
+    } catch (err: any) {
+      console.log(err, 'djskljdlksjflksjdflj')
+      setError(err.message || "Unexpected upload error");
       setLoading(false);
     }
   };
 
   return (
     <div className="container mb-5">
+      {error && (
+        <div className="alert alert-danger text-center" role="alert">
+          {error}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="py-2 px-5 position-relative">
         {!loading && !data ? (
           <FileUploader
